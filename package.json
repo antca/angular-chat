@@ -1,0 +1,33 @@
+{
+  "name": "es6-boilerplate",
+  "version": "0.0.5",
+  "description": "Express + ES6 + stylus boilerplate",
+  "main": "app.js",
+  "author": "Apox <npm@apox.fr>",
+  "license": "MIT",
+  "devDependencies": {
+    "express": "^4.8.6",
+    "stylus": "^0.48.1",
+    "nib": "^1.0.3",
+    "jade": "^1.5.0",
+    "jade-6to5": "0.0.2",
+    "6to5-browserify": "0.0.10",
+    "6to5": "*",
+    "watchify": "^1.0.2",
+    "gulp": "^3.8.7",
+    "browserify": "^5.11.0",
+    "vinyl-source-stream": "^0.1.1",
+    "gulp-nodemon": "^1.0.4",
+    "gulp-livereload": "^2.1.1",
+    "gulp-uglifyjs": "^0.5.0",
+    "vinyl-buffer": "^1.0.0",
+    "express-session": "~1.9.3",
+    "passport-steam": "~0.1.4",
+    "angular": "~1.3.8",
+    "socket.io": "~1.2.1",
+    "socket.io-client": "~1.2.1",
+    "passport.socketio": "~3.4.1",
+    "cookie-parser": "~1.3.3",
+    "connect-sqlite3": "~0.9.3"
+  }
+}

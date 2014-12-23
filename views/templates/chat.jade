@@ -1,0 +1,7 @@
+h1 Welcome to the chatroom !
+div.chat
+  ul.messages(auto-scroll)
+    li.message(ng-repeat="message in messages")
+      span.message_sender {{message.sender}} :
+      span.message_message {{message.message}}
+  input.message_text-box(type="text", placeholder="Enter your message here.", ng-model="messageToSend", ng-keydown="onKeyDown($event)")
