@@ -3,6 +3,7 @@ import * as express from "express";
 import * as session from "express-session";
 import * as SQLiteStore from "connect-sqlite3";
 import * as stylus from "stylus";
+import * as bootstrap from "bootstrap-styl";
 import * as nib from "nib";
 import * as to5 from "jade-6to5";
 import * as jade from "jade";
@@ -34,7 +35,8 @@ app.use(stylus.middleware({
     return stylus(str)
     .set("filename", path)
     .set("compress", true)
-    .use(nib());
+    .use(nib())
+    .use(bootstrap());
   }
 }));
 //Static files

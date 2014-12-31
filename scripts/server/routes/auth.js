@@ -47,19 +47,16 @@ var router = Router();
 
 router
 .get("/login", (req, res) => {
-  res.render("login");
+  res.render("login", {user: req.user});
 })
 .get("/logout", (req, res) => {
   req.logout();
   res.redirect("/");
 })
 .get("/twitter", passport.authenticate("twitter"), () => {})
-.get("/twitter/callback", passport.authenticate("twitter", {failureRedirect: "/login"}), (req, res) => {
-    res.send("<script>window.opener.postMessage('done', '*');</script>");
-})
 .get("/steam", passport.authenticate("steam"), () => {})
-.get("/steam/callback", passport.authenticate("steam", {failureRedirect: "/login"}), (req, res) => {
-  res.send("<script>window.opener.postMessage('done', '*');</script>");
-});
+.get("/twitter/callback",  passport.authenticate("twitter", {failureRedirect: "/auth/login", successRedirect: "/auth/login"}), () => {})
+.get("/steam/callback",  passport.authenticate("steam", {failureRedirect: "/auth/login", successRedirect: "/auth/login"}),  () => {});
+
 
 export default router;

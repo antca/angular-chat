@@ -2,28 +2,12 @@ html
   head
     
   body
+  if !user
     div#logins
-      a(href="#" data-strategy="twitter") Se connecter avec Twitter.
+      a(href="/auth/twitter") Se connecter avec Twitter.
       br
-      a(href="#" data-strategy="steam") Se connecter avec Steam.
-    
-    script
-      :to5
-        var logins = document.querySelector("#logins");
-        logins.addEventListener("click", (event) => {
-          event.preventDefault();
-          if(event.target.dataset.strategy) popitup(`/auth/${event.target.dataset.strategy}`);
-        });
-        function popitup(url) {
-          var newwindow=window.open(url,'Login','height=500,width=500');
-          if (window.focus) {newwindow.focus()}
-          window.addEventListener("message", (event) => {
-            if(event.source === newwindow && event.data === "done") {
-                newwindow.close();
-                window.location = "http://127.0.0.1:8080";             
-            }
-            console.log(event.data);
-          });
-          return false;
-        }
-      
+      a(href="/auth/steam") Se connecter avec Steam.
+  else
+    h1 You are logged in !
+    a(href="/auth/logout") Log out
+    script window.opener.postMessage("done", "*");

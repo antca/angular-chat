@@ -1,7 +1,19 @@
-h1 Welcome to the chatroom !
-div.chat
-  ul.messages(auto-scroll)
-    li.message(ng-repeat="message in messages")
-      span.message_sender {{message.sender}} :
-      span.message_message {{message.message}}
-  input.message_text-box(type="text", placeholder="Enter your message here.", ng-model="messageToSend", ng-keydown="onKeyDown($event)")
+.chat.container
+  .row.main-container.col-md-10   
+      ul.chat_messages.list-group(auto-scroll)
+        li.chat_message.list-group-item.clearfix(ng-repeat="message in messages")
+          h4.chat_message_sender.list-group-item-heading {{message.sender}} :
+          p.chat_message_message.list-group-item-text {{message.message}}
+      .chat_message-input
+            .input-group
+              span.input-group-addon(ng-if="me.logged_in") {{me.name}}
+              span.input-group-btn(ng-if="!me.logged_in")
+                button.btn.btn-primary(ng-click="login($event)") Log in
+              input.chat_text-box.form-control(type="text", placeholder="Enter your message here.", ng-model="messageToSend", ng-keydown="onKeyDown($event)", ng-disabled="!me.logged_in || false")
+              span.input-group-btn
+                button.btn.btn-default(type="button", ng-disabled="!me.logged_in || false") Send
+  .push 
+  .footer        
+    .col-md-2
+      .list-group.chat_user-list
+        a.chat_user-list_user.list-group-item(ng-repeat="user in users") {{user.name}}
