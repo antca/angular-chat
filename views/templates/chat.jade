@@ -1,19 +1,22 @@
-.chat.container
-  .row.main-container.col-md-10   
-      ul.chat_messages.list-group(auto-scroll)
-        li.chat_message.list-group-item.clearfix(ng-repeat="message in messages")
-          h4.chat_message_sender.list-group-item-heading {{message.sender}} :
-          p.chat_message_message.list-group-item-text {{message.message}}
-      .chat_message-input
-            .input-group
-              span.input-group-addon(ng-if="me.logged_in") {{me.name}}
-              span.input-group-btn(ng-if="!me.logged_in")
-                button.btn.btn-primary(ng-click="login($event)") Log in
-              input.chat_text-box.form-control(type="text", placeholder="Enter your message here.", ng-model="messageToSend", ng-keydown="onKeyDown($event)", ng-disabled="!me.logged_in || false")
-              span.input-group-btn
-                button.btn.btn-default(type="button", ng-disabled="!me.logged_in || false") Send
-  .push 
-  .footer        
-    .col-md-2
-      .list-group.chat_user-list
-        a.chat_user-list_user.list-group-item(ng-repeat="user in users") {{user.name}}
+.chat.container-fluid
+  .row
+    .col-sm-10
+      .messages-wrap
+        ul.messages.list-group(auto-scroll)
+          li.list-group-item(ng-repeat="message in messages")
+            h4.list-group-item-heading {{message.sender}} :
+            p.list-group-item-text {{message.message}}
+    .col-sm-2
+      .list-group
+        a.list-group-item(ng-repeat="user in users") {{user.name}}
+  .row
+    .col-sm-10.message-input
+      .input-group
+        span.input-group-btn(ng-if="me.logged_in")
+          a.btn.btn-danger(href="/auth/logout") X
+        span.input-group-addon(ng-if="me.logged_in") {{me.name}}
+        span.input-group-btn(ng-if="!me.logged_in")
+          button.btn.btn-primary(ng-click="login($event)") Log in
+        input.chat_text-box.form-control(type="text", placeholder="Enter your message here.", ng-model="messageToSend", ng-keydown="sendMessage($event)", ng-disabled="!me.logged_in || false")
+        span.input-group-btn
+          button.btn.btn-default(type="button", ng-disabled="!me.logged_in || false", ng-click="sendMessage($event)") Send

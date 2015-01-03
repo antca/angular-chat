@@ -25,9 +25,9 @@ export default function($scope, chat) {
     });
   });
 
-  $scope.onKeyDown = ($event) => {
-    if($event.keyCode === 13) {
-      if($scope.messageToSend.length > 0) {        
+  $scope.sendMessage = ($event) => {
+    if($event.type === 'keydown' && $event.keyCode === 13 || $event.type === 'click') {
+      if($scope.messageToSend.length > 0) {
         chat.sendMessage($scope.messageToSend);
         $scope.messageToSend = "";
       }

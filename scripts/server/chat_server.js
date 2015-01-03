@@ -2,7 +2,7 @@ import * as socketio from "socket.io";
 import {authorize} from "passport.socketio";
 import * as cookieParser from "cookie-parser";
 import * as credentials from "./credentials";
-import * as _ from "lodash"
+import * as _ from "lodash";
 
 export default class {
   constructor(server, sessionStore) {
@@ -28,7 +28,8 @@ export default class {
     io.on('connect', (socket) => {
       //Connecting
       if(socket.request.user.logged_in) {
-        if(this.userList[socket.request.user.id]) this.userList[socket.request.user.id].disconnect();
+        //TODO Find cleaner way to avoid bugs when an user open multiple chat windows.
+        //if(this.userList[socket.request.user.id]) this.userList[socket.request.user.id].disconnect();
         this.userList[socket.request.user.id] = socket;
         console.log(_.values(this.userList).map(socket => socket.request.user.id));
         //Send userList
