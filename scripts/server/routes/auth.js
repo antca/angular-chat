@@ -1,15 +1,15 @@
-import {Router} from "express";
-import * as passport from "passport";
-import {Strategy as TwitterStrategy} from "passport-twitter";
-import {Strategy as SteamStrategy} from "passport-steam";
+import {Router} from 'express';
+import passport from 'passport';
+import {Strategy as TwitterStrategy} from 'passport-twitter';
+import {Strategy as SteamStrategy} from 'passport-steam';
 
-import * as credentials from "../credentials";
+import * as credentials from '../credentials';
 
 //Authentification
 passport.use(new TwitterStrategy({
   consumerKey: credentials.twitter.consumerKey,
   consumerSecret: credentials.twitter.consumerSecret,
-  callbackURL: "http://127.0.0.1:8080/auth/twitter/callback"
+  callbackURL: 'http://127.0.0.1:8080/auth/twitter/callback'
 },
 function(token, tokenSecret, profile, done) {
   var filtredProfile = {
@@ -46,17 +46,17 @@ function(identifier, profile, done) {
 var router = Router();
 
 router
-.get("/login", (req, res) => {
-  res.render("login", {user: req.user});
+.get('/login', (req, res) => {
+  res.render('login', {user: req.user});
 })
-.get("/logout", (req, res) => {
+.get('/logout', (req, res) => {
   req.logout();
-  res.redirect("/");
+  res.redirect('/');
 })
-.get("/twitter", passport.authenticate("twitter"), () => {})
-.get("/steam", passport.authenticate("steam"), () => {})
-.get("/twitter/callback",  passport.authenticate("twitter", {failureRedirect: "/auth/login", successRedirect: "/auth/login"}), () => {})
-.get("/steam/callback",  passport.authenticate("steam", {failureRedirect: "/auth/login", successRedirect: "/auth/login"}),  () => {});
+.get('/twitter', passport.authenticate('twitter'), () => {})
+.get('/steam', passport.authenticate('steam'), () => {})
+.get('/twitter/callback',  passport.authenticate('twitter', {failureRedirect: '/auth/login', successRedirect: '/auth/login'}), () => {})
+.get('/steam/callback',  passport.authenticate('steam', {failureRedirect: '/auth/login', successRedirect: '/auth/login'}),  () => {});
 
 
 export default router;

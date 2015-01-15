@@ -4,11 +4,11 @@
       .messages-wrap
         ul.messages.list-group(auto-scroll)
           li.list-group-item(ng-repeat="message in messages")
-            h4.list-group-item-heading {{message.sender}} :
+            h4.list-group-item-heading {{users[message.sender].name}} :
             p.list-group-item-text {{message.message}}
     .col-sm-2
       .list-group
-        a.list-group-item(ng-repeat="user in users") {{user.name}}
+        a.list-group-item(ng-repeat="user in _.values(users) | filter: { connected: true }") {{user.name}}
   .row
     .col-sm-10.message-input
       .input-group

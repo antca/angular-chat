@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import * as io from 'socket.io-client';
+import io from 'socket.io-client';
 
 export default class extends EventEmitter{
   constructor() {
@@ -15,6 +15,8 @@ export default class extends EventEmitter{
     this._socket.on('message', (messageObj) => this.emit('message', messageObj));
     this._socket.on('user-list', (messageObj) => this.emit('user-list', messageObj));
     this._socket.on('userid', (userid) => this.emit('userid', userid));
+    this._socket.on('add-user', (user) => this.emit('add-user', user));
+    this._socket.on('del-user', (userid) => this.emit('del-user', userid));
   }
   sendMessage(message) {
     this._socket.emit('message', message);

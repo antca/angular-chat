@@ -1,4 +1,4 @@
-import "angular";
-import "./modules/chat";
+import 'angular';
+import './modules/chat';
 
-var app = angular.module("MyApp", ["chat"]);
+var app = angular.module('MyApp', ['chat']);

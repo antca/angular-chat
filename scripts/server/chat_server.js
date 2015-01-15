@@ -1,63 +1,62 @@
-import * as socketio from "socket.io";
-import {authorize} from "passport.socketio";
-import * as cookieParser from "cookie-parser";
-import * as credentials from "./credentials";
-import * as _ from "lodash";
+import socketio from 'socket.io';
+import {authorize} from 'passport.socketio';
+import Redis from 'redis';
+import sioRedis from 'socket.io-redis';
+import cookieParser from 'cookie-parser';
+import credentials from './credentials';
+import _ from 'lodash';
 
 export default class {
   constructor(server, sessionStore) {
+    this.redis = Redis.createClient();
     this.userList = {};
-    this.messageList = [];
 
-    var io = socketio(server);
+    var io = this.io = socketio(server);
+    io.adapter(sioRedis('localhost:6379'));
     io.use(authorize({
       cookieParser: cookieParser,
       key: 'connect.sid',
       secret: credentials.session.secret,
       store: sessionStore,
       success(passportData, accept) {
-        console.log(passportData.user.name + " just authentified !");
         return accept();
       },
       fail(passportData, message, error, accept) {
-        if(error)  throw new Error(message);
-        console.log(passportData.user.name + " did not authentified !");
+        if(error) throw new Error(message);
         return accept();
       }
     }));
+
     io.on('connect', (socket) => {
-      //Connecting
-      if(socket.request.user.logged_in) {
-        //TODO Find cleaner way to avoid bugs when an user open multiple chat windows.
-        //if(this.userList[socket.request.user.id]) this.userList[socket.request.user.id].disconnect();
-        this.userList[socket.request.user.id] = socket;
-        console.log(_.values(this.userList).map(socket => socket.request.user.id));
-        //Send userList
-        io.emit('user-list', _.mapValues(this.userList, s => s.request.user));
-        socket.emit('userid', socket.request.user.id);
-      } else {
-        socket.emit('user-list', _.mapValues(this.userList, s => s.request.user));
-      }
-      //Send messages
-      this.messageList.map((message) => socket.emit('message', message));
-      console.log(socket.request.user.name + " just connected !")
-      //Disconnecting
-      socket.on('disconnect', (message) => {
-        console.log(socket.request.user.name + " just disconnected !");
-        if(this.userList[socket.request.user.id]) {
-          delete this.userList[socket.request.user.id];
-          io.emit('user-list', _.mapValues(this.userList, s => s.request.user));
-        }
+      var user = socket.request.user;
+      user.connected = true;
+      this.redis.lrange('messages', 0, -1, (error, result) => {        
+        result.map((message) => socket.emit('message', JSON.parse(message)));
       });
-      //Incomming message
-      socket.on('message', (message) => {
-        console.log(socket.request.user.name + " sent a message: " + message)
-        if(socket.request.user.logged_in) {
-          var msg = {sender: socket.request.user.name, message: message};
-          this.messageList.push(msg);
-          if(this.messageList > 100) this.messageList.shift();
-          io.emit('message', msg);
-        }
+      this.redis.hgetall('users', (error, users) => {
+          if(error) return;
+          socket.emit('user-list', _.mapValues(users, JSON.parse));
+          if(user.logged_in) {
+            this.redis.hset('users', user.id, JSON.stringify(user));
+            this.redis.incr(`user-connexion:${user.id}`);
+            io.emit('add-user', user);
+            socket.emit('userid', user.id);
+            socket.on('disconnect', () => {
+              this.redis.decr(`user-connexion:${user.id}`, (error, value) => {
+                if(!error && value <= 0) {
+                  user.connected = false;
+                  this.redis.hset('users', user.id, JSON.stringify(user));
+                  io.emit('del-user', user.id);
+                } 
+              });
+            });
+            socket.on('message', (message) => {
+              var msg = {sender: socket.request.user.id, message: message};
+              this.redis.rpush('messages', JSON.stringify(msg));
+              this.redis.ltrim('messages', -99, -1);
+              io.emit('message', msg);
+            });    
+          }
       });
     });
   }

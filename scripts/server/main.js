@@ -1,22 +1,22 @@
-import * as path from "path";
-import * as express from "express";
-import * as session from "express-session";
-import * as SQLiteStore from "connect-sqlite3";
-import * as stylus from "stylus";
-import * as bootstrap from "bootstrap-styl";
-import * as nib from "nib";
-import * as to5 from "jade-6to5";
-import * as jade from "jade";
-import * as passport from "passport";
+import path from 'path';
+import express from 'express';
+import session from 'express-session';
+import redis from 'connect-redis';
+import stylus from 'stylus';
+import bootstrap from 'bootstrap-styl';
+import nib from 'nib';
+import to5 from 'jade-6to5';
+import jade from 'jade';
+import passport from 'passport';
 //Routes
-import indexRouter from "./routes/index";
-import authRouter from "./routes/auth";
-import templatesRouter from "./routes/templates";
+import indexRouter from './routes/index';
+import authRouter from './routes/auth';
+import templatesRouter from './routes/templates';
 //Chat Server
-import ChatServer from "./chat_server";
+import ChatServer from './chat_server';
 import {Server} from 'http';
 
-import * as credentials from "./credentials";
+import * as credentials from './credentials';
 
 var appDir = path.dirname(require.main.filename);
 
@@ -24,25 +24,28 @@ var app = express();
 
 //Templates
 jade = to5({}, jade);
-app.engine("jade", jade.__express);
-app.set("view engine", "jade");
-app.set("views", appDir + "/views");
+app.engine('jade', jade.__express);
+app.set('view engine', 'jade');
+app.set('views', appDir + '/views');
 //Styles
 app.use(stylus.middleware({
-  src: appDir + "/stylesheets",
-  dest: appDir + "/public",
+  src: appDir + '/stylesheets',
+  dest: appDir + '/public',
   compile: function (str, path) {
     return stylus(str)
-    .set("filename", path)
-    .set("compress", true)
+    .set('filename', path)
+    .set('compress', true)
     .use(nib())
     .use(bootstrap());
   }
 }));
 //Static files
-app.use("/public", express.static(appDir + "/public"));
+app.use('/public', express.static(appDir + '/public'));
 //Session Store
-var sessionStore = new (SQLiteStore(session));
+var sessionStore = new (redis(session))({
+  host: '127.0.0.1',
+  port: 6379
+});
 app.use(session({
   store: sessionStore,
   secret: credentials.session.secret,
@@ -60,15 +63,15 @@ passport.deserializeUser(function(obj, done) {
   done(null, obj);
 });
 
-app.use("/", indexRouter);
-app.use("/auth", authRouter);
-app.use("/templates", templatesRouter);
+app.use('/', indexRouter);
+app.use('/auth', authRouter);
+app.use('/templates', templatesRouter);
 
 //Chat Server
 var server = Server(app);
 app.chat = new ChatServer(server, sessionStore);
 
-var port = Number(process.env.PORT || 8080);
-server.listen(port);
-
-(msg => console.log(`Hello from ${msg} ! Listening on port ${port}`))("Node");
+var port = Number(process.argv[2] || process.env.PORT || 8080);
+server.listen(port, () => {
+  console.log(`Listening on port ${port}.`);
+});
