@@ -1,0 +1,21 @@
+{
+  "appenders": [
+    {
+      "type": "file",
+      "filename": "http.log",
+      "maxLogSize": 20480,
+      "backups": 3,
+      "category": "http"
+    },
+    {
+      "type": "file",
+      "filename": "chat.log",
+      "maxLogSize": 20480,
+      "backups": 3,
+      "category": "chat"
+    }
+  ],
+  "levels": {
+    "[all]": "INFO"
+  }
+}

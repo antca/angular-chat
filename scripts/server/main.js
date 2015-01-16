@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import favicon from 'serve-favicon';
 import session from 'express-session';
 import redis from 'connect-redis';
 import stylus from 'stylus';
@@ -16,12 +17,18 @@ import templatesRouter from './routes/templates';
 import ChatServer from './chat_server';
 import {Server} from 'http';
 
+import log4js from 'log4js';
+
 import * as credentials from './credentials';
 
 var appDir = path.dirname(require.main.filename);
 
+log4js.configure('logger_config.json', { cwd: `${appDir}/logs`});
+
 var app = express();
 
+//Logger
+app.use(log4js.connectLogger(log4js.getLogger('http')));
 //Templates
 jade = to5({}, jade);
 app.engine('jade', jade.__express);
@@ -43,12 +50,14 @@ app.use(stylus.middleware({
 app.use('/public', express.static(appDir + '/public'));
 //Session Store
 var sessionStore = new (redis(session))({
-  host: '127.0.0.1',
+  host: 'localhost',
   port: 6379
 });
 app.use(session({
   store: sessionStore,
   secret: credentials.session.secret,
+  resave: false,
+  saveUninitialized: true,
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 1 week
 }));
 //Authentification
