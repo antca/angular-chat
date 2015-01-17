@@ -20,10 +20,15 @@ export default function($scope, chat) {
     });
   });
 
+  chat.on('connect', (userid) => {
+    $scope.$apply(() => {
+      $scope.messages = [];
+    });
+  });
+
   chat.on('user-list', (userList) => {
     $scope.$apply(() => {
       $scope.users = userList;
-      console.log($scope.users);
     });
   });
 

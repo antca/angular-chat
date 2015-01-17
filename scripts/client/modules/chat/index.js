@@ -7,5 +7,5 @@ import chatService from './services/chat_service';
 angular.module('chat', [])
 .directive('chat', chatDirective)
 .directive('autoScroll', autoScrollDirective)
-.controller('chat', chatController)
+.controller('chat', ['$scope', 'chat', chatController])
 .service('chat', chatService);

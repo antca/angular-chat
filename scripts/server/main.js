@@ -27,6 +27,10 @@ log4js.configure('logger_config.json', { cwd: `${appDir}/logs`});
 
 var app = express();
 
+//Favicon
+app.use(favicon(appDir + '/public/images/favicon.ico'));
+//Static files
+app.use('/public', express.static(appDir + '/public'));
 //Logger
 app.use(log4js.connectLogger(log4js.getLogger('http')));
 //Templates
@@ -46,8 +50,6 @@ app.use(stylus.middleware({
     .use(bootstrap());
   }
 }));
-//Static files
-app.use('/public', express.static(appDir + '/public'));
 //Session Store
 var sessionStore = new (redis(session))({
   host: 'localhost',

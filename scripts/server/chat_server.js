@@ -49,9 +49,9 @@ export default class {
             socket.emit('userid', user.id);
             socket.on('disconnect', () => {
               this.redis.hincrby('user-connexions', user.id, -1, (error, value) => {
-                log.info(`${user.name} (${user.id}@${user.provider}) => left(${value} connetion(s) left)`);
+                log.info(`${user.name} (${user.id}@${user.provider}) => left(${value} connection(s) left)`);
                 if(!error && value <= 0) {                  
-                log.info(`${user.name}(${user.id}@${user.provider}) => disconnected`);
+                log.info(`${user.name} (${user.id}@${user.provider}) => disconnected`);
                   user.connected = false;
                   this.redis.hset('users', user.id, JSON.stringify(user));
                   io.emit('del-user', user.id);
